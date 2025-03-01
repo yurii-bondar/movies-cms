@@ -1,0 +1,38 @@
+const DEFAULT_APP_PORT: number = 8000;
+
+const DATASETS_DIR: string = 'datasets';
+
+const FIRST_MOVIE_YEAR: number = 1888;
+
+const MAX_FILE_SIZE: number = 5 * 1024 * 1024;
+
+const ALLOWED_FILES_EXTENSIONS: string[] = ['.txt'];
+
+const MAX_NUMBER_OF_FILES_PER_REQUEST: number = 10;
+
+enum MOVIE_FORMATS {
+  VHS = 'VHS',
+  DVD = 'DVD',
+  BLU_RAY = 'Blu-ray',
+}
+
+enum HTTP_STATUS_CODES {
+  OK = 200,
+  CREATED = 201,
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  INTERNAL_SERVER_ERROR = 500,
+}
+
+export {
+  MOVIE_FORMATS,
+  HTTP_STATUS_CODES,
+  DATASETS_DIR,
+  MAX_FILE_SIZE,
+  DEFAULT_APP_PORT,
+  FIRST_MOVIE_YEAR,
+  ALLOWED_FILES_EXTENSIONS,
+  MAX_NUMBER_OF_FILES_PER_REQUEST,
+};

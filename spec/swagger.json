@@ -1,0 +1,416 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Movies CMS API",
+    "version": "1.0.0",
+    "description": "API documentation for the Movies CMS application"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000/api/v1",
+      "description": "Local server"
+    }
+  ],
+  "paths": {
+    "/users/signup": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "name", "password", "confirmPassword"],
+                "properties": {
+                  "email": { "type": "string", "example": "yurii.bondar.vn@gmail.com" },
+                  "name": { "type": "string", "example": "Yurii Bondar" },
+                  "password": { "type": "string", "example": "mega_pass" },
+                  "confirmPassword": { "type": "string", "example": "mega_pass" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "email": { "type": "string" },
+                        "name": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/signin": {
+      "post": {
+        "summary": "User login",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "example": "yurii.bondar.vn@gmail.com" },
+                  "password": { "type": "string", "example": "mega_pass" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": { "type": "string" },
+                    "refreshToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/refresh-token": {
+      "put": {
+        "summary": "Refresh access token",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["refreshToken"],
+                "properties": {
+                  "refreshToken": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New access token generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "delete": {
+        "summary": "Logout user",
+        "tags": ["Users"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Logged out successfully" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies/import": {
+      "post": {
+        "summary": "Import movies from dataset",
+        "tags": ["Movies"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Movies imported successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "datasets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "datasetId": { "type": "integer" },
+                          "moviesCount": { "type": "integer" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies": {
+      "post": {
+        "summary": "Create one or multiple movies",
+        "description": "Creates one or multiple movies in the database.",
+        "tags": ["Movies"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Movies created successfully" },
+          "400": { "description": "Invalid input" },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "get": {
+        "summary": "Get movies list",
+        "description": "Fetch a list of movies with filters, sorting, and pagination.",
+        "tags": ["Movies"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "name", "in": "query", "schema": { "type": "string" }, "description": "Filter by name" },
+          { "name": "actor", "in": "query", "schema": { "type": "string" }, "description": "Filter by actor" },
+          { "name": "year", "in": "query", "schema": { "type": "integer" }, "description": "Filter by year" },
+          { "name": "format", "in": "query", "schema": { "type": "string" }, "description": "Filter by format" },
+          { "name": "datasetId", "in": "query", "schema": { "type": "integer" }, "description": "Filter by dataset ID" },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "enum": ["name", "year"] }, "description": "Sorting field" },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["ASC", "DESC"] }, "description": "Sort order" },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "description": "Page number" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 }, "description": "Number of results per page" }
+        ],
+        "responses": {
+          "200": { "description": "List of movies" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/movies/{id}": {
+      "get": {
+        "summary": "Get movie details",
+        "description": "Fetch a movie by its ID.",
+        "tags": [
+          "Movies"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Movie ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie details"
+          },
+          "404": {
+            "description": "Movie not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a movie",
+        "description": "Deletes a movie by its ID.",
+        "tags": [
+          "Movies"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Movie ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Movie deleted successfully"
+          },
+          "404": {
+            "description": "Movie not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a movie",
+        "description": "Updates movie details by ID.",
+        "tags": [
+          "Movies"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Movie ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Movie updated successfully"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Movie not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Movie": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Inception" },
+          "year": { "type": "integer", "example": 2010 },
+          "format": { "type": "string", "enum": ["VHS", "DVD", "Blu-ray"], "example": "Blu-ray" },
+          "actors": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["Leonardo DiCaprio", "Joseph Gordon-Levitt"]
+          }
+        }
+      },
+      "MovieUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Inception" },
+          "year": { "type": "integer", "example": 2010 },
+          "format": { "type": "string", "enum": ["VHS", "DVD", "Blu-ray"], "example": "Blu-ray" },
+          "actors": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["Leonardo DiCaprio", "Joseph Gordon-Levitt"]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

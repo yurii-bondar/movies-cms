@@ -1,0 +1,91 @@
+### Signup
+POST http://localhost:8000/api/v1/users/signup
+Content-Type: application/json
+
+{
+  "email": "yurii.bondar.vn@gmail.com",
+  "name": "Yurii Bondar",
+  "password": "mega_pass",
+  "confirmPassword": "mega_pass"
+}
+### Signin
+POST http://localhost:8000/api/v1/users/signin
+Content-Type: application/json
+
+{
+  "email": "yurii.bondar.vn@gmail.com",
+  "password": "mega_pass"
+}
+
+> {%
+  client.global.set("accessToken", response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+%}
+### Refresh Token
+PUT http://localhost:8000/api/v1/users/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+  client.global.set("accessToken", response.body.accessToken);
+%}
+### Logout
+DELETE http://localhost:8000/api/v1/users/logout
+Authorization: Bearer {{accessToken}}
+
+### Import multiple datasets
+POST http://localhost:8000/api/v1/movies/import
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="files"; filename="dataset_1.txt"
+Content-Type: text/plain
+
+< ./../DATASETS/dataset_1.txt
+
+### Create movie/movies
+POST http://localhost:8000/api/v1/movies
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+[
+  {
+    "name": "Gladiator",
+    "year": 2000,
+    "format": "VHS",
+    "actors": ["Russell Crowe", "Joaquin Phoenix"]
+  },
+  {
+    "name": "Inception",
+    "year": 2010,
+    "format": "DVD",
+    "actors": ["Leonardo DiCaprio", "Joseph Gordon-Levitt"]
+  }
+]
+
+###  Get movies list
+GET http://localhost:8000/api/v1/movies?name=Gladiator&sortBy=year&order=DESC&page=1&limit=5
+Authorization: Bearer {{accessToken}}
+
+### Ge movie by id
+GET http://localhost:8000/api/v1/movies/1
+Authorization: Bearer {{accessToken}}
+
+### Update movie by id
+PATCH http://localhost:8000/api/v1/movies/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "format": "VHS",
+  "actors": ["Russell Crowe", "Joaquin Phoenix", "Connie Nielsen"]
+}
+
+### Delete movie by id
+DELETE http://localhost:8000/api/v1/movies/1
+Authorization: Bearer {{accessToken}}
+
