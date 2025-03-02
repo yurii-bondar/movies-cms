@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import movieService from '../services/movie.service';
 import errorLogUtil from '../helpers/errorLog';
 import { HTTP_STATUS_CODES } from '../constants';
+import CacheService from '../services/cache.service';
 
 const errorLog = errorLogUtil(__filename);
 
@@ -28,12 +29,15 @@ async function importMovies(
         userId, req.files as Express.Multer.File[],
       );
 
-      res
-        .status(HTTP_STATUS_CODES.CREATED)
-        .json({
-          message: 'Movies imported successfully',
-          datasets,
-        });
+      if (datasets?.datasets?.length) {
+        await CacheService.destroy();
+        res
+          .status(HTTP_STATUS_CODES.CREATED)
+          .json({
+            message: 'Movies imported successfully',
+            datasets,
+          });
+      }
     }
   } catch (err) {
     errorLog('importMovies', err);
@@ -45,9 +49,13 @@ async function create(req: AuthenticatedRequest, res: Response, next: NextFuncti
   try {
     const movies = Array.isArray(req.body) ? req.body : [req.body];
     const createdMovies = await movieService.createMovies(movies);
-    res
-      .status(HTTP_STATUS_CODES.CREATED)
-      .json({ message: 'Movies created successfully', createdMovies });
+
+    if (createdMovies?.length) {
+      await CacheService.destroy();
+      res
+        .status(HTTP_STATUS_CODES.CREATED)
+        .json({ message: 'Movies created successfully', createdMovies });
+    }
   } catch (err) {
     next(err);
   }
@@ -57,9 +65,17 @@ async function remove(req: AuthenticatedRequest, res: Response, next: NextFuncti
   try {
     const id = Number(req.params.id);
     const deletedCount = await movieService.removeMovie(id);
-    res
-      .status(deletedCount ? HTTP_STATUS_CODES.OK : HTTP_STATUS_CODES.NOT_FOUND)
-      .json({ message: deletedCount ? 'Movie deleted' : 'Movie not found' });
+
+    if (deletedCount) {
+      await CacheService.destroy();
+      res
+        .status(HTTP_STATUS_CODES.OK)
+        .json({ message: 'Movie deleted' });
+    } else {
+      res
+        .status(HTTP_STATUS_CODES.NOT_FOUND)
+        .json({ message: 'Movie not found' });
+    }
   } catch (err) {
     next(err);
   }
@@ -69,16 +85,19 @@ async function update(req: AuthenticatedRequest, res: Response, next: NextFuncti
   try {
     const id = Number(req.params.id);
     const movie = await movieService.getMovieById(id, req);
-    if (movie) {
-      await movieService.updateMovie(id, req.body);
-      res
-        .status(HTTP_STATUS_CODES.OK)
-        .json({ message: 'Movie updated' });
-    } else {
+
+    if (!movie) {
       res
         .status(HTTP_STATUS_CODES.NOT_FOUND)
         .json({ message: 'Movie not found' });
     }
+
+    await movieService.updateMovie(id, req.body);
+    await CacheService.destroy();
+
+    res
+      .status(HTTP_STATUS_CODES.OK)
+      .json({ message: 'Movie updated' });
   } catch (err) {
     next(err);
   }

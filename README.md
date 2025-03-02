@@ -1,5 +1,19 @@
 # Movies CMS
 
+#### Service technology stack:
+- express.js (REST framework)
+- sqlite (as sql database)
+- leveldb (as cache service)
+
+
+If you would like to use something more powerful as a database and cache service, you can use the 
+docker compose settings in my repository [maintenance-services](https://github.com/yurii-bondar/maintenance-services).
+<br><br>
+There you will find [postgres](https://github.com/yurii-bondar/maintenance-services/blob/main/compose.yaml#L6) 
+and [mariadb](https://github.com/yurii-bondar/maintenance-services/blob/main/compose.yaml#L18) as sql databases,
+regarding cache services [redis](https://github.com/yurii-bondar/maintenance-services/blob/main/compose.yaml#L77) and
+[memcached](https://github.com/yurii-bondar/maintenance-services/blob/main/compose.yaml#L105)
+
 #### clone repository
 ```bash
 git clone git@github.com:yurii-bondar/movies-cms.git
@@ -14,7 +28,7 @@ npm install
 
 #### dev start with nodemon
 ```bash
-npm run dev
+npm run start:dev
 ```
 #### simple start (without nodemon)
 ```bash
@@ -282,6 +296,17 @@ curl -XDELETE -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
 
 # {"message":"Movie deleted"}
 ```
+
+#### caching
+##### For the 'get movie by id' and 'get movies list' routes, a levelDB-based middleware cache is used. 
+The request cache can be viewed in the movies.leveldb file using the following command:
+```bash
+# works for an application launched using the 'npm run start:dev'
+ ts-node readLeveldb.ts 
+```
+
+##### and the result will be as follows:
+![Cached data](./imgs/cached.png)
 
 #### a dataset file whose value is in the source field of the movie entity
 ```bash

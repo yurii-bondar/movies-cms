@@ -12,13 +12,23 @@
     "docker:start": "docker run --rm --name movies --env NODE_ENV=prod -p 8000:8050 movies",
     "docker:stop": "docker stop movies",
     "docker:remove": "docker rm -f movies",
-    "docker:rebuild": "npm run docker:remove && npm run docker:build && npm run docker:run"
+    "docker:rebuild": "npm run docker:remove && npm run docker:build && npm run docker:start"
   },
   "author": {
     "name": "Yurii Bondar",
     "email": "yurii.bondar.vn@gmail.com"
   },
-  "keywords": [],
+  "keywords": [
+    "node.js",
+    "typescript",
+    "express.js",
+    "sqlite",
+    "leveldb",
+    "sequelize",
+    "cms",
+    "crud",
+    "eslint"
+  ],
   "license": "ISC",
   "dependencies": {
     "ajv": "^8.17.1",
@@ -31,11 +41,13 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "level": "^9.0.0",
     "multer": "^1.4.5-lts.1",
     "sequelize": "^6.37.5",
     "sequelize-typescript": "^2.1.6",
     "sqlite3": "^5.1.7",
     "swagger-ui-express": "^5.0.1",
+    "table": "^6.9.0",
     "typescript": "^5.7.3"
   },
   "devDependencies": {

@@ -1,10 +1,15 @@
 import express, { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
 
+import {
+  auth,
+  cache,
+  upload,
+  validateSchema,
+} from '../middlewares';
 import serviceController from '../controllers/service.controller';
 import authController from '../controllers/auth.controller';
 import movieController from '../controllers/movie.controller';
-import { auth, upload, validateSchema } from '../middlewares';
 import userSchema from '../validationSchemas/user.schema';
 import movieSchema from '../validationSchemas/movie.schema';
 import swaggerDocument from '../../../spec/swagger.json';
@@ -25,8 +30,8 @@ moviesRouter
   .post('/', validateSchema({ body: movieSchema.createMovie }), movieController.create)
   .delete('/:id', validateSchema({ params: movieSchema.idParam }), movieController.remove)
   .patch('/:id', validateSchema({ params: movieSchema.idParam, body: movieSchema.updateMovie }), movieController.update)
-  .get('/:id', validateSchema({ params: movieSchema.idParam }), movieController.show)
-  .get('/', validateSchema({ query: movieSchema.listMovies }), movieController.list);
+  .get('/:id', validateSchema({ params: movieSchema.idParam }), cache(600), movieController.show)
+  .get('/', validateSchema({ query: movieSchema.listMovies }), cache(600), movieController.list);
 
 serviceRouter
   .get('/', serviceController.about);

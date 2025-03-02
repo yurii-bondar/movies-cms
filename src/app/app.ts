@@ -4,7 +4,7 @@ import config from '../../config';
 
 import routes from './routes';
 import { connectDB } from './database/connection';
-import { errorHandler } from './middlewares/errorHandler';
+import { errorHandler } from './middlewares/errorHandler.middleware';
 import { DATASETS_DIR } from './constants';
 
 const { server: { port }, datasetsDir } = config;
