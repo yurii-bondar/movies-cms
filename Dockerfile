@@ -1,5 +1,7 @@
 FROM node:22-alpine
 
+ENV NODE_ENV=prod
+
 WORKDIR /app
 
 COPY package*.json ./
@@ -13,4 +15,4 @@ RUN npm run build
 
 EXPOSE 8000
 
-CMD ["node", "dist/src/index.js"]
+CMD ["node", "-r", "dotenv/config", "dist/src/index.js"]

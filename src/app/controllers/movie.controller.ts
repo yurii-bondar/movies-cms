@@ -90,14 +90,14 @@ async function update(req: AuthenticatedRequest, res: Response, next: NextFuncti
       res
         .status(HTTP_STATUS_CODES.NOT_FOUND)
         .json({ message: 'Movie not found' });
+    } else {
+      await movieService.updateMovie(id, req.body);
+      await CacheService.destroy();
+
+      res
+        .status(HTTP_STATUS_CODES.OK)
+        .json({ message: 'Movie updated' });
     }
-
-    await movieService.updateMovie(id, req.body);
-    await CacheService.destroy();
-
-    res
-      .status(HTTP_STATUS_CODES.OK)
-      .json({ message: 'Movie updated' });
   } catch (err) {
     next(err);
   }

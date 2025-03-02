@@ -14,6 +14,27 @@ and [mariadb](https://github.com/yurii-bondar/maintenance-services/blob/main/com
 regarding cache services [redis](https://github.com/yurii-bondar/maintenance-services/blob/main/compose.yaml#L77) and
 [memcached](https://github.com/yurii-bondar/maintenance-services/blob/main/compose.yaml#L105)
 
+
+#### You can find a ready-made Docker image on my Docker Hub at the link [movies-cms](https://hub.docker.com/r/bondevn/movies) or run immediately with the command
+```bash
+docker run --name movies -p 8000:8050 -e APP_PORT=8050 bondevn/movies
+```
+#### in the terminal you will see the following
+```bash
+> docker run --name movies -p 8000:8050 -e APP_PORT=8050 bondevn/movies
+Unable to find image 'bondevn/movies:latest' locally
+latest: Pulling from bondevn/movies
+640e0ad7f19e: Download complete 
+817da3428f09: Download complete 
+9a3143cd1244: Download complete 
+5f7bd04d98c8: Download complete 
+b1281abfd102: Download complete 
+Digest: sha256:5d0d6561615e6795efd72a087ccf15111773cee76cfa0d2b4fa7504c4a2e95a0
+Status: Downloaded newer image for bondevn/movies:latest
+Connected to the database.
+🚀 Server has been successfully launched
+```
+
 #### clone repository
 ```bash
 git clone git@github.com:yurii-bondar/movies-cms.git
@@ -296,6 +317,8 @@ curl -XDELETE -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
 
 # {"message":"Movie deleted"}
 ```
+
+#### If you are more comfortable working with .http files, you can use [requests.http](requests.http)
 
 #### caching
 ##### For the 'get movie by id' and 'get movies list' routes, a levelDB-based middleware cache is used. 

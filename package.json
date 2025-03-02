@@ -9,7 +9,7 @@
     "start:dev": "cross-env NODE_ENV=dev nodemon --exec \"ts-node --prefer-ts-exts\" src/index.ts",
     "lint": "eslint . --ext .ts",
     "docker:build": "docker build -t movies .",
-    "docker:start": "docker run --rm --name movies --env NODE_ENV=prod -p 8000:8050 movies",
+    "docker:start": "docker run --rm --name movies -p 8000:8050 movies",
     "docker:stop": "docker stop movies",
     "docker:remove": "docker rm -f movies",
     "docker:rebuild": "npm run docker:remove && npm run docker:build && npm run docker:start"
